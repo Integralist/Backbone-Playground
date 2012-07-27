@@ -1,0 +1,38 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Mark McDonnell" />
+        <title>Backbone.js</title>
+        <link rel="stylesheet" href="Assets/Styles/styles.css">
+    </head>
+    <body>
+        <div id="view-contacts">
+    		<select>
+    			<option>Please select a user</option>
+    		</select>
+		</div>
+		
+		<div id="view-contact"></div>
+		
+		<form id="view-add">
+			<p><input type="text" placeholder="Name" name="fullname"></p>
+			<p><input type="text" placeholder="Age" maxlength="3" name="age"></p>
+			<p><input type="text" placeholder="Address" name="address"></p>
+			<input type="submit" value="Add New Record">
+		</form>
+        
+        <script data-main="Assets/Scripts/App/main" src="Assets/Scripts/require.js"></script>
+        <script type="text/template" id="contact_template">
+            <dl>
+                <dt>Name</dt>
+                <dd><%=name%></dd>
+                <dt>Age</dt>
+                <dd><%=age%></dd>
+                <dt>Role</dt>
+                <dd><%=role%></dd>
+            </dl>
+        </script>
+    </body>
+</html>
