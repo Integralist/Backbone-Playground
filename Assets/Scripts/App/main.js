@@ -7,13 +7,13 @@ requirejs.config({
     }
 });
 
-require(['../Utils/backbone'], function(){
+require(['../Utils/backbone', '../Utils/guid'], function(){
     
     var Contact = Backbone.Model.extend({
         defaults: {
-            name: '? no name given ?',
+            name: 'No name provided',
             age: 0,
-            role: 'Grunt'
+            address: 'No address provided'
         },
         
         // Built-in method
@@ -29,6 +29,10 @@ require(['../Utils/backbone'], function(){
         
         // Built-in method
         validate: function (attributes) {
+            if (!attributes.id || attributes.id <= 0) {
+                return 'An error has occurred? There should be an id generated!';
+            }
+            
             if (typeof attributes.age != 'number') {
                 return 'Age needs to be a number';
             }
@@ -41,17 +45,18 @@ require(['../Utils/backbone'], function(){
         }
     });
     
-    var manager = new Contact({
+    var manager = new Contact();
+    manager.set({
+        id: Math.guid(),
         name: 'Mark McDonnell',
-        age: 30,
-        role: 'Manager'
+        age: 30
     });
     
     var developer = new Contact();
     developer.set({
+        id: Math.guid(),
         name: 'Ashley Banks',
-        age: 23,
-        role: 'Developer'
+        age: 23
     });
     
     var dev_name = developer.get('name');
@@ -62,13 +67,38 @@ require(['../Utils/backbone'], function(){
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
+    // We set-up a collection of Contact Models
+    // This is so we can manipulate a group of (the same) Models more easily
+    var Contacts = Backbone.Collection.extend({
+        model: Contact,
+        
+        initialize: function(){
+            this.trigger('collection:init');
+            this.bind('add', this.model_added, this);
+        },
+        
+        model_added: function(){
+            console.log('A new model has been created so trigger an event for the View to update the <select> menu');
+        }
+    });
+    
+    // We'll initialize the Collection with a couple of Models
+    var contacts = new Contacts([manager, developer]);
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    
     var ContactsView = Backbone.View.extend({
         initialize: function(){
-            console.log('get initial model data and populate the select menu?');
+            console.log(contacts.models, 'get initial model data and populate the select menu?');
         },
         
         events: {
+            'collection:init': 'populate', 
             'change select': 'displaySelected'
+        },
+        
+        populate: function(){
+            console.log('populate the <select> with initial Model data');
         },
         
         displaySelected: function (event) {
@@ -94,7 +124,7 @@ require(['../Utils/backbone'], function(){
             var fullname = this.el.fullname.value;
             var age = this.el.age.value;
             var address = this.el.address.value;
-            var obj = {};
+            var contact;
     		
     		// This regex tests for a first name with at least two characters, 
     		// followed by an optional middle name with at least two characters (we use a non-capturing group to save the regex engine some work), 
@@ -126,16 +156,24 @@ require(['../Utils/backbone'], function(){
     			// Display errors
     			alert(errors.join('\n'));
     		} else {
-    			obj.name = fullname;
-    			obj.age = age;
-    			obj.address = address;
-    			obj.id = 123;//Controller.Model.generate_id();
+    			// There should be an AJAX function to post data to server-side script (for storing in db)
+    			// Backbone.Model.save() might be a built-in handler for this, I'm not sure yet?
     			
-    			// AJAX function to post data to server-side script (for storing in db)
-    			// I THINK THE .save() method of Backbone should handle this?
+    			// Create a new Model
+    			var contact = new Contact()
+                contact.set({
+        			id: Math.guid(),
+                    name: fullname,
+                    age: +age, // ensure data is an Integer
+                    address: address
+                });
     			
-    			// Insert the new record into the Model
-    			//Controller.Model.add(obj);
+    			// Add the new Model into the Contacts Collection
+    			// This should trigger an 'add' event which means the record is inserted into the <select>
+                contacts.add(contact);
+                
+                // Built-in property to access raw Models inside the Collection
+                console.log(contacts.models);
     			
     			// Display success message and reset the form
     			this.el.reset(); // this.el provided by Backbone
@@ -165,11 +203,15 @@ require(['../Utils/backbone'], function(){
         },
         
         render: function(){
+            // TODO pull first Model from Collection and display it (instead of manual data as per below example)
+            var model = contacts.models[0];
+            var attributes = model.attributes;
             var template = $('#contact_template');
             var compile = _.template(template.html(), {
-                name: 'A',
-                age: 'B',
-                role: 'C'
+                id: attributes.id,
+                name: attributes.name,
+                age: attributes.age,
+                address: attributes.address
             });
             
             // this.el refers to HTML elements
@@ -181,6 +223,24 @@ require(['../Utils/backbone'], function(){
     
     var contact_view = new ContactView({
         el: $('#view-contact')
+    });
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    // DOESNT WORK?
+    var Routing = Backbone.Router.extend({
+        routes: {
+            'test': 'test',
+            'search/:query/:page': 'search' // #search/testing/p7
+        },
+        
+        test: function(){
+            console.log('User has accessed this app from /test/');
+        },
+        
+        search: function (query, page) {
+            console.log(query, page);
+        }
     });
     
 });
