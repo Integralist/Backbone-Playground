@@ -18,11 +18,11 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         
         // Built-in method
         initialize: function(){
-            this.bind('change:age', function(){
+            this.on('change:age', function(){
                 console.log(this.get('name') + '\'s age changed to ' + this.get('age'));
             });
             
-            this.bind('error', function (model, error) {
+            this.on('error', function (model, error) {
                 console.warn('Error:', model, error);
             });
         },
@@ -73,8 +73,8 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         model: Contact,
         
         initialize: function(){
-            this.trigger('collection:init');
-            this.bind('add', this.model_added, this);
+            this.trigger('init');
+            this.on('add', this.model_added, this);
         },
         
         model_added: function(){
@@ -89,11 +89,14 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     
     var ContactsView = Backbone.View.extend({
         initialize: function(){
-            console.log(contacts.models, 'get initial model data and populate the select menu?');
+            this.collection.on('init', this.populate, this);
+            console.log('get initial model data and populate the select menu?');
         },
         
+        // built-in 'events' management only applies to DOM elements (as this is a 'View' after all)
+        // other custom events triggered are handled via 'this.on' within the initialize method 
+        // because of this we have to use 'this.on' within a 'Collection'
         events: {
-            'collection:init': 'populate', 
             'change select': 'displaySelected'
         },
         
@@ -107,7 +110,8 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     });
     
     var contacts_view = new ContactsView({
-        el: $('#view-contacts')
+        el: $('#view-contacts'),
+        collection: contacts // pass in the Collection into this View
     });
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
