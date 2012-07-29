@@ -4,6 +4,5 @@ Re-building the example from my [MVC Start-up Kit](https://github.com/Integralis
 
 ##TODO
 
-* Need to add new data to Model and have that 'saved' to the server
-* Once data sent to the Model it should trigger an event which lets the View know it can update the select menu
-* Once the select menu is updated with the latest Model data then selecting an option should display that item's details.
+* Need to get the initial population of the `<select>` menu working (StackOverflow query set-up)
+* Need to look into Backbone's `.save()` method

@@ -77,8 +77,11 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
             this.on('add', this.model_added, this);
         },
         
-        model_added: function(){
-            console.log('A new model has been created so trigger an event for the View to update the <select> menu');
+        model_added: function (model) {
+            // The View listens out for 'model:added'
+            // Once it hears it, it updates the <select> menu to include the latest Model
+            // We pass the latest Model through from here...
+            this.trigger('model:added', model);
         }
     });
     
@@ -90,6 +93,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     var ContactsView = Backbone.View.extend({
         initialize: function(){
             this.collection.on('init', this.populate, this);
+            this.collection.on('model:added', this.update, this);
             console.log('get initial model data and populate the select menu?');
         },
         
@@ -105,7 +109,17 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         },
         
         displaySelected: function (event) {
-            console.log('get model data and display selected user', event);
+            var targ = event.target;
+            var selected_option = targ.options[targ.selectedIndex];
+            var model = this.collection.getByCid(selected_option.value);
+            contact_view.render(model);
+        },
+        
+        // 'model' is passed through from Collection
+        update: function (model) {
+            var select = this.$el.find('select');
+            var option = '<option value="' + model.cid + '">' + model.attributes.name + '</option>';
+            select.append(option);
         }
     });
     
@@ -124,6 +138,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         addContact: function(e){
             e.preventDefault(); // prevent form from submitting
             
+            var message = document.getElementById('message-success');
             var errors = [];
             var fullname = this.el.fullname.value;
             var age = this.el.age.value;
@@ -164,7 +179,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     			// Backbone.Model.save() might be a built-in handler for this, I'm not sure yet?
     			
     			// Create a new Model
-    			var contact = new Contact()
+    			contact = new Contact()
                 contact.set({
         			id: Math.guid(),
                     name: fullname,
@@ -174,13 +189,16 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     			
     			// Add the new Model into the Contacts Collection
     			// This should trigger an 'add' event which means the record is inserted into the <select>
-                contacts.add(contact);
-                
-                // Built-in property to access raw Models inside the Collection
-                console.log(contacts.models);
+                this.collection.add(contact);
     			
     			// Display success message and reset the form
     			this.el.reset(); // this.el provided by Backbone
+    			
+    			// Don't want to see a massive long list of 'Record added successfully!' messages
+    			// So if one is already there then just remove it first
+    			if (message) {
+        			message.parentNode.removeChild(message);
+    			}
     			
     			// Create an element to hold our success message
     			var doc = document;
@@ -196,7 +214,8 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     });
     
     var add_contact = new AddContactView({
-        el: $('#view-add')
+        el: $('#view-add'),
+        collection: contacts // pass in the Collection into this View
     });
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,9 +225,9 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
             this.render();
         },
         
-        render: function(){
+        render: function (model) {
             // TODO pull first Model from Collection and display it (instead of manual data as per below example)
-            var model = contacts.models[0];
+            var model = model || this.collection.models[0];
             var attributes = model.attributes;
             var template = $('#contact_template');
             var compile = _.template(template.html(), {
@@ -226,7 +245,8 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     });
     
     var contact_view = new ContactView({
-        el: $('#view-contact')
+        el: $('#view-contact'),
+        collection: contacts
     });
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
