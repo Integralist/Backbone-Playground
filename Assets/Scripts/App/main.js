@@ -242,7 +242,6 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         },
         
         render: function (model) {
-            // TODO pull first Model from Collection and display it (instead of manual data as per below example)
             var model = model || this.collection.models[0];
             var attributes = model.attributes;
             var template = $('#contact_template');
