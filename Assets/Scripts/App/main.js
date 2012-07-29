@@ -73,7 +73,6 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         model: Contact,
         
         initialize: function(){
-            this.trigger('init');
             this.on('add', this.model_added, this);
         },
         
@@ -82,6 +81,12 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
             // Once it hears it, it updates the <select> menu to include the latest Model
             // We pass the latest Model through from here...
             this.trigger('model:added', model);
+        },
+        
+        // Can't trigger custom event within 'initialize' because the View listener wont be ready/set-up yet!
+        // So have to stick it inside a separate method which I call after I set-up the associated View
+        populate: function(){
+            this.trigger('contacts:populate');
         }
     });
     
@@ -92,9 +97,9 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     
     var ContactsView = Backbone.View.extend({
         initialize: function(){
-            this.collection.on('init', this.populate, this);
+            this.select = this.$el.find('select');
+            this.collection.on('contacts:populate', this.populate, this);
             this.collection.on('model:added', this.update, this);
-            console.log('get initial model data and populate the select menu?');
         },
         
         // built-in 'events' management only applies to DOM elements (as this is a 'View' after all)
@@ -105,7 +110,13 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         },
         
         populate: function(){
-            console.log('populate the <select> with initial Model data');
+            var select = this.select; // scope of this changes within 'each' (refers to same thing as the 'model' argument)
+            var option;
+            
+            this.collection.each(function(model){
+                option = '<option value="' + model.cid + '">' + model.attributes.name + '</option>';
+                select.append(option);
+            }, this);
         },
         
         displaySelected: function (event) {
@@ -127,6 +138,11 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         el: $('#view-contacts'),
         collection: contacts // pass in the Collection into this View
     });
+    
+    // To be honest I probably could have just manually called 
+    // 'this.populate()' from within the Views initilize method
+    // but maybe I'll have this Backbone code reviewed by someone in the know and see what they suggest is better practice
+    contacts.populate();
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
