@@ -10,6 +10,7 @@ requirejs.config({
 require(['../Utils/backbone', '../Utils/guid'], function(){
     
     var Contact = Backbone.Model.extend({
+        // Built-in object
         defaults: {
             name: 'No name provided',
             age: 0,
@@ -38,13 +39,21 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
             }
         },
         
-        // Custom method
         birthday: function(){
             var age = this.get('age');
             this.set({ 'age': ++age });
         }
     });
     
+    /*
+     * Not sure why, but the alternative syntax...
+     *
+     *      new Contact({ id: x, name: x, age: x })
+     *
+     * ...which I think is much cleaner didn't work - not sure if that's now an obsolete API?
+     * So I had to use the .set() method instead
+     */
+     
     var manager = new Contact();
     manager.set({
         id: Math.guid(),
@@ -59,9 +68,10 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         age: 23
     });
     
+    // Following few lines were just to demonstrate API
     var dev_name = developer.get('name');
     var dev_age = developer.get('age');
-    
+        
     developer.birthday();
     console.log(developer.toJSON()); // gives you object of 'developer'
     
@@ -70,8 +80,10 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     // We set-up a collection of Contact Models
     // This is so we can manipulate a group of (the same) Models more easily
     var Contacts = Backbone.Collection.extend({
+        // Built-in property
         model: Contact,
         
+        // Built-in method
         initialize: function(){
             this.on('add', this.model_added, this);
         },
@@ -96,13 +108,14 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
     var ContactsView = Backbone.View.extend({
+        // Built-in method
         initialize: function(){
             this.select = this.$el.find('select');
             this.collection.on('contacts:populate', this.populate, this);
             this.collection.on('model:added', this.update, this);
         },
         
-        // built-in 'events' management only applies to DOM elements (as this is a 'View' after all)
+        // Built-in 'events' management only applies to DOM elements (as this is a 'View' after all)
         // other custom events triggered are handled via 'this.on' within the initialize method 
         // because of this we have to use 'this.on' within a 'Collection'
         events: {
@@ -139,19 +152,19 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         collection: contacts // pass in the Collection into this View
     });
     
-    // To be honest I probably could have just manually called 
-    // 'this.populate()' from within the Views initilize method
-    // but maybe I'll have this Backbone code reviewed by someone in the know and see what they suggest is better practice
+    // To be honest I probably could have just manually called 'this.collection.populate()' from within the ContactsView's initilize method.
+    // I'll likely ask a Backbone expert to review this code and see what they suggest is the better practice.
     contacts.populate();
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
     var AddContactView = Backbone.View.extend({
+        // Built-in object for handling DOM events
         events: {
-            'click input[type=submit]': 'addContact'
+            'click input[type=submit]': 'add_contact'
         },
         
-        addContact: function(e){
+        add_contact: function (e) {
             e.preventDefault(); // prevent form from submitting
             
             var message = document.getElementById('message-success');
@@ -237,6 +250,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
     var ContactView = Backbone.View.extend({
+        // Built-in method
         initialize: function(){
             this.render();
         },
@@ -267,6 +281,8 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
     // DOESNT WORK?
+    // According to @_aaronackerman_ I need to run Backbone.history.start() to start the router 
+    // Apparently it's not clear in the documentation either.
     var Routing = Backbone.Router.extend({
         routes: {
             'test': 'test',
