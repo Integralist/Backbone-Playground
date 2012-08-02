@@ -280,12 +280,9 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
-    // DOESNT WORK?
-    // According to @_aaronackerman_ I need to run Backbone.history.start() to start the router 
-    // Apparently it's not clear in the documentation either.
     var Routing = Backbone.Router.extend({
         routes: {
-            'test': 'test',
+            'test': 'test',                 // #test
             'search/:query/:page': 'search' // #search/testing/p7
         },
         
@@ -294,8 +291,14 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         },
         
         search: function (query, page) {
-            console.log(query, page);
+            console.log(query, page); // => testing, p7
         }
     });
+    
+    // Create new instance of our Routing Class
+    var routing = new Routing();
+    
+    // Initialize the Router
+    Backbone.history.start();
     
 });
