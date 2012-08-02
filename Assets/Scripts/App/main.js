@@ -45,24 +45,13 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         }
     });
     
-    /*
-     * Not sure why, but the alternative syntax...
-     *
-     *      new Contact({ id: x, name: x, age: x })
-     *
-     * ...which I think is much cleaner didn't work - not sure if that's now an obsolete API?
-     * So I had to use the .set() method instead
-     */
-     
-    var manager = new Contact();
-    manager.set({
+    var manager = new Contact({
         id: Math.guid(),
         name: 'Mark McDonnell',
         age: 30
     });
     
-    var developer = new Contact();
-    developer.set({
+    var developer = new Contact({
         id: Math.guid(),
         name: 'Ashley Banks',
         age: 23
@@ -73,7 +62,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     var dev_age = developer.get('age');
         
     developer.birthday();
-    console.log(developer.toJSON()); // gives you object of 'developer'
+    console.log(manager.toJSON(), developer.toJSON()); // gives you object of specified Model
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -119,7 +108,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
         // other custom events triggered are handled via 'this.on' within the initialize method 
         // because of this we have to use 'this.on' within a 'Collection'
         events: {
-            'change select': 'displaySelected'
+            'change select': 'display_selected'
         },
         
         populate: function(){
@@ -132,7 +121,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
             }, this);
         },
         
-        displaySelected: function (event) {
+        display_selected: function (event) {
             var targ = event.target;
             var selected_option = targ.options[targ.selectedIndex];
             var model = this.collection.getByCid(selected_option.value);
@@ -208,8 +197,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     			// Backbone.Model.save() might be a built-in handler for this, I'm not sure yet?
     			
     			// Create a new Model
-    			contact = new Contact()
-                contact.set({
+    			contact = new Contact({
         			id: Math.guid(),
                     name: fullname,
                     age: +age, // ensure data is an Integer
@@ -252,7 +240,8 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     var ContactView = Backbone.View.extend({
         // Built-in method
         initialize: function(){
-            this.render();
+            // No need to render content initially - although I can if I wanted
+            //this.render();
         },
         
         render: function (model) {
