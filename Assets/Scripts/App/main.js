@@ -62,6 +62,7 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     var dev_age = developer.get('age');
         
     developer.birthday();
+    
     console.log(manager.toJSON(), developer.toJSON()); // gives you object of specified Model
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,6 +266,31 @@ require(['../Utils/backbone', '../Utils/guid'], function(){
     var contact_view = new ContactView({
         el: $('#view-contact'),
         collection: contacts
+    });
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    function create_models (data) {
+        var json = JSON.parse(data);
+        var len = json.length;
+        var model;
+        
+        while (len--) {
+            model = new Contact({
+                id: Math.guid(),
+                name: json[len].name,
+                age: json[len].age
+            });
+            
+            // The 'contacts' object is our Backbone.Collection.
+            // We call the built-in Backbone 'add' method to trigger a custom event to fire (which updates the View)
+            contacts.add(model);
+        }
+    }
+    
+    var data = $.ajax({
+        url: '/Assets/Includes/Contacts.php',
+        success: create_models
     });
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
