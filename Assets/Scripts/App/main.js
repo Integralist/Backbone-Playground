@@ -31,7 +31,9 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
         
     developer.birthday();
     
-    console.log(manager.toJSON(), developer.toJSON()); // gives you object of specified Model
+    // toJSON is a built-in Model/Collection method which returns js object of specified Model
+    console.dir(manager.toJSON())
+    console.dir(developer.toJSON());
     
     
     /**
@@ -82,6 +84,8 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
      * Lazy Load Models into Collection
      */
     
+    // The following code was how I was lazily loading more Models into my Collection
+    // I then discovered (thanks to _aaronackerman_) that there is a built-in method for exactly that called fetch()
     /*
     function create_models (data) {
         var json = JSON.parse(data);
@@ -107,20 +111,14 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
     });
     */
     
-    Backbone.sync = function(method, model, options) {
-        console.group('sync');
-            console.log(method + ": " + model.url);
-            console.log('options: ', options);
-        console.groupEnd();
-    };
-    
     contacts.fetch({
-        add: true, // prevent resetting the Collection (instead add Models to the Collection),
+        add: true, // prevent resetting the Collection (instead add Models ontop of current set of Collection Models),
         error: function (collection, resp) {
-            console.log(collection, resp);
+            console.log('Error: ', collection, resp);
         },
         success: function (collection, resp) {
-            console.log(collection, resp);
+            console.log('Success: ', collection);
+            console.dir(resp);
         }
     });
     
