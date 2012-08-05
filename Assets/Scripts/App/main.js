@@ -82,6 +82,7 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
      * Lazy Load Models into Collection
      */
     
+    /*
     function create_models (data) {
         var json = JSON.parse(data);
         var len = json.length;
@@ -103,6 +104,24 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
     var data = $.ajax({
         url: '/Assets/Includes/Contacts.php',
         success: create_models
+    });
+    */
+    
+    Backbone.sync = function(method, model, options) {
+        console.group('sync');
+            console.log(method + ": " + model.url);
+            console.log('options: ', options);
+        console.groupEnd();
+    };
+    
+    contacts.fetch({
+        add: true, // prevent resetting the Collection (instead add Models to the Collection),
+        error: function (collection, resp) {
+            console.log(collection, resp);
+        },
+        success: function (collection, resp) {
+            console.log(collection, resp);
+        }
     });
     
     

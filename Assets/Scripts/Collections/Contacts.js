@@ -6,6 +6,9 @@ define(['../Utils/backbone'], function(){
         // Built-in property
         model: Contact,
         
+        // Built-in property
+        url: '/Assets/Includes/Contacts.php',
+        
         // Built-in method
         initialize: function(){
             this.on('add', this.model_added, this);
