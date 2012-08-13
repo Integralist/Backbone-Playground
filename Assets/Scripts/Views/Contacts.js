@@ -30,9 +30,7 @@ define(['../Utils/backbone'], function(){
             var targ = event.target;
             var selected_option = targ.options[targ.selectedIndex];
             var model = this.collection.getByCid(selected_option.value);
-            
-            // TODO: clean-up this global property access some how?
-            window.contact_view.render(model);
+            window.integralist.views.contact.render(model);
         },
         
         // 'model' is passed through from Collection

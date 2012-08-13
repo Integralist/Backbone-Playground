@@ -7,7 +7,11 @@ requirejs.config({
     }
 });
 
-require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '../Views/AddContact', '../Views/Contact', '../Routes/Routing', '../Utils/backbone'], function (Contact, Contacts, ContactsView, AddContactView, ContactView, Routing) {
+/**
+ * We load the 'namespace' dependency but it returns nothing so we pass nothing through to the callback function.
+ * We only need to load the namespace once at the top level require() call as it sets a global property that is accessible everywhere
+ */
+require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '../Views/AddContact', '../Views/Contact', '../Routes/Routing', '../Utils/backbone', 'namespace'], function (Contact, Contacts, ContactsView, AddContactView, ContactView, Routing) {
     
     /**
      * Model Generation Examples
@@ -25,13 +29,13 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
         age: 23
     });
     
-    // Following few lines were just to demonstrate API
+    // The following few lines are used just to demonstrate the Backbone.js API
     var dev_name = developer.get('name');
     var dev_age = developer.get('age');
         
     developer.birthday();
     
-    // toJSON is a built-in Model/Collection method which returns js object of specified Model
+    // The .toJSON() method is a built-in Model/Collection method which returns js object of specified Model
     console.dir(manager.toJSON())
     console.dir(developer.toJSON());
     
@@ -41,6 +45,9 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
      */
      
     var contacts = new Contacts([manager, developer]);
+    
+    // The .toJSON() method is a built-in Model/Collection method which returns js object of specified Model
+    console.log(contacts.toJSON());
     
     
     /**
@@ -67,10 +74,9 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
      * View for displaying the selected Contact
      */
     
-    // I've had to create a global property so I can access this View's "render()" method from within /Views/Contacts.js
-    // Wasn't sure how else to handle that situation?
-    // TODO: find better solution than setting a global property!
-    var contact_view = window.contact_view = new ContactView({
+    // I've had to create a global namespace property so I can access this View's "render()" method from within another View (/Views/Contacts.js)
+    // According to people smarter than I (i.e. Addy Osmani from Google) this is the most appropriate solution.
+    window.integralist.views.contact = new ContactView({
         el: $('#view-contact'),
         collection: contacts
     });
@@ -80,8 +86,8 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
      * Lazy Load Models into Collection
      */
     
-    // The following code was how I was lazily loading more Models into my Collection
-    // I then discovered (thanks to _aaronackerman_) that there is a built-in method for exactly that called fetch()
+    // The following code was how I was originally 'lazy loading' more Models into my Collection.
+    // I then discovered (thanks to _aaronackerman_) that there is a built-in method for doing exactly that called fetch()
     /*
     function create_models (data) {
         var json = JSON.parse(data);
@@ -108,7 +114,7 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
     */
     
     contacts.fetch({
-        add: true, // prevent resetting the Collection (instead add Models on top of current set of Collection Models),
+        add: true, // Prevent resetting the Collection (i.e. instead or clearing the Collection first we just add new Models on top of current set of Models),
         error: function (collection, resp) {
             console.log('Error: ', collection, resp);
         },
