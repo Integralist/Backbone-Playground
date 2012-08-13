@@ -10,6 +10,7 @@ define(['../Utils/backbone'], function(){
         
         // Built-in method
         initialize: function(){
+            // Syntax: .on(type:property)
             this.on('change:age', function(){
                 console.log(this.get('name') + '\'s age changed to ' + this.get('age'));
             });

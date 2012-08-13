@@ -52,10 +52,6 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
         collection: contacts // pass in the Collection into this View
     });
     
-    // To be honest I probably could have just manually called 'this.collection.populate()' from within the ContactsView's initilize method.
-    // I'll likely ask a Backbone expert to review this code and see what they suggest is the better practice.
-    contacts.populate();
-    
     
     /**
      * View for <form> to add a new Contact
@@ -112,7 +108,7 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
     */
     
     contacts.fetch({
-        add: true, // prevent resetting the Collection (instead add Models ontop of current set of Collection Models),
+        add: true, // prevent resetting the Collection (instead add Models on top of current set of Collection Models),
         error: function (collection, resp) {
             console.log('Error: ', collection, resp);
         },

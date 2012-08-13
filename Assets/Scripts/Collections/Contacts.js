@@ -11,6 +11,7 @@ define(['../Models/Contact', '../Utils/backbone'], function (Contact) {
         
         // Built-in method
         initialize: function(){
+            // Collections fire the events 'add' and 'remove'
             this.on('add', this.model_added, this);
         },
         

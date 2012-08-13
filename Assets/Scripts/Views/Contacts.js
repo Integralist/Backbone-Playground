@@ -6,6 +6,7 @@ define(['../Utils/backbone'], function(){
             this.select = this.$el.find('select');
             this.collection.on('contacts:populate', this.populate, this);
             this.collection.on('model:added', this.update, this);
+            this.collection.populate(); // when this completes it triggers the custom event 'contacts:populate'
         },
         
         // Built-in 'events' management only applies to DOM elements (as this is a 'View' after all)
@@ -29,7 +30,9 @@ define(['../Utils/backbone'], function(){
             var targ = event.target;
             var selected_option = targ.options[targ.selectedIndex];
             var model = this.collection.getByCid(selected_option.value);
-            contact_view.render(model);
+            
+            // TODO: clean-up this global property access some how?
+            window.contact_view.render(model);
         },
         
         // 'model' is passed through from Collection
