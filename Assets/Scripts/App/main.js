@@ -7,11 +7,7 @@ requirejs.config({
     }
 });
 
-/**
- * We load the 'namespace' dependency but it returns nothing so we pass nothing through to the callback function.
- * We only need to load the namespace once at the top level require() call as it sets a global property that is accessible everywhere
- */
-require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '../Views/AddContact', '../Views/Contact', '../Routes/Routing', '../Utils/backbone', 'namespace'], function (Contact, Contacts, ContactsView, AddContactView, ContactView, Routing) {
+require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '../Views/AddContact', '../Views/Contact', '../Routes/Routing'], function (Contact, Contacts, ContactsView, AddContactView, ContactView, Routing) {
     
     /**
      * Model Generation Examples
@@ -56,7 +52,20 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
     
     var contacts_view = new ContactsView({
         el: $('#view-contacts'),
-        collection: contacts // pass in the Collection into this View
+        collection: contacts, // pass in the Collection into this View
+        
+        /**
+         * View for displaying the selected Contact
+         *
+         * Originally I had created a global namespace property so I could access this View's "render()" method from within 'contacts_view' (/Views/Contacts.js)
+         * And according to people smarter than I (i.e. Addy Osmani from Google) this was the most appropriate solution.
+         * But I since discovered I could pass in additional data when creating a View instance and so that's what I've done here.
+         */
+         
+        associated_view: new ContactView({
+            el: $('#view-contact'),
+            collection: contacts
+        })
     });
     
     
@@ -67,18 +76,6 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
     var add_contact = new AddContactView({
         el: $('#view-add'),
         collection: contacts // pass in the Collection into this View
-    });
-    
-    
-    /**
-     * View for displaying the selected Contact
-     */
-    
-    // I've had to create a global namespace property so I can access this View's "render()" method from within another View (/Views/Contacts.js)
-    // According to people smarter than I (i.e. Addy Osmani from Google) this is the most appropriate solution.
-    window.integralist.views.contact = new ContactView({
-        el: $('#view-contact'),
-        collection: contacts
     });
     
     
@@ -133,6 +130,10 @@ require(['../Models/Contact', '../Collections/Contacts', '../Views/Contacts', '.
     var routing = new Routing();
     
     // Initialize the Router
-    Backbone.history.start();
+    Backbone.history.start({ pushState: true }); 
+    // http://backbone:8888/#search/testing/p7 converts to http://backbone:8888/search/testing/p7
+    // http://backbone:8888/#test converts to http://backbone:8888/test
+    // Note: Going directly to the URL wont work - the server needs to be set-up to redirect properly.
+    // If you go to the hashbang variation then the browser will be redirected to the pushState version (if supported)
     
 });

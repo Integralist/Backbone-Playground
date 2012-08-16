@@ -10,4 +10,3 @@ As per the documentation for Backbone.js, the requirements are:
 ##TODO
 
 * Need to look into Backbone's `.save()` method
-* Need to look at HTML5 `pushState` API and how to fall back to hash bang's for older browsers
