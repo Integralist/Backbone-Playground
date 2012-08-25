@@ -1,4 +1,4 @@
-define(['../Utils/backbone'], function(){
+define(['Backbone'], function(){
     
     var Contact = Backbone.Model.extend({
         // Built-in object

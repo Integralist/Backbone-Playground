@@ -1,4 +1,4 @@
-define(['../Utils/backbone'], function(){
+define(['Backbone'], function(){
     
     var Routing = Backbone.Router.extend({
         routes: {

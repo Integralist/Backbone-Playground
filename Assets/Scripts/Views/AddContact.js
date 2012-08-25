@@ -1,4 +1,4 @@
-define(['../Models/Contact', '../Utils/backbone'], function (Contact) {
+define(['../Models/Contact', 'Backbone'], function (Contact) {
     
     var AddContactView = Backbone.View.extend({
         // Built-in object for handling DOM events

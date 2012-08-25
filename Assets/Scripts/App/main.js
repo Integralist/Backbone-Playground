@@ -1,6 +1,9 @@
 requirejs.config({
+    paths: {
+        Backbone: '../Utils/backbone'
+    },
     shim: {
-        '../Utils/backbone': {
+        'Backbone': {
             deps: ['../Utils/lodash', '../Utils/jquery'], // load dependencies
             exports: 'Backbone' // use the global 'Backbone' as the module value
         }

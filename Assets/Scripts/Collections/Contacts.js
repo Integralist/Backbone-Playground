@@ -1,4 +1,4 @@
-define(['../Models/Contact', '../Utils/backbone'], function (Contact) {
+define(['../Models/Contact', 'Backbone'], function (Contact) {
     
     // We set-up a collection of Contact Models
     // This is so we can manipulate a group of (the same) Models more easily

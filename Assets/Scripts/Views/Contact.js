@@ -1,4 +1,4 @@
-define(['../Utils/backbone'], function(){
+define(['Backbone'], function(){
     
     var ContactView = Backbone.View.extend({
         // Built-in method
